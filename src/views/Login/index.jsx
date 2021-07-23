@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -11,9 +11,33 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Copyright from "../../components/Copyright";
-import backgroundImg from "../../assets/login-bg.jpg";
 
 export default function SignIn() {
+  const initState = { email: "", password: "" };
+  const initError = { emailErr: false, emailMessage: "", passwordErr: false, passwordMessage: "" };
+  const [state, setState] = useState(initState);
+  const [error, setError] = useState(initError);
+
+  const validateEmail = (e) => {
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    emailRegex.test(state.email)
+      ? setError({ ...error, emailErr: false, emailMessage: "" })
+      : setError({ ...error, emailErr: true, emailMessage: "The email is not a valid email address." });
+  };
+
+  const validatePassword = () => {
+    state.password.length < 6
+      ? setError({ ...error, passwordErr: true, passwordMessage: "Please choose a stronger password" })
+      : setError({ ...error, passwordErr: false, passwordMessage: "" });
+  };
+
+  const handleState = (e) => {
+    //console.log(e.target.name);
+    setState({ ...state, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(event);
@@ -29,7 +53,7 @@ export default function SignIn() {
     <Container
       component="main"
       maxWidth="xs"
-      sx={{ zIndex: 1, backgroundColor: "white", borderRadius: "8px", boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
+      sx={{ backgroundColor: "white", borderRadius: "8px", boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
     >
       <Box
         sx={{
@@ -47,6 +71,8 @@ export default function SignIn() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
+            error={error.emailErr}
+            helperText={error.emailMessage}
             margin="normal"
             required
             fullWidth
@@ -55,8 +81,12 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            onBlur={validateEmail}
+            onChange={handleState}
           />
           <TextField
+            error={error.passwordErr}
+            helperText={error.passwordMessage}
             margin="normal"
             required
             fullWidth
@@ -65,6 +95,8 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onBlur={validatePassword}
+            onChange={handleState}
           />
           <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
