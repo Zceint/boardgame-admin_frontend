@@ -11,14 +11,16 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Copyright from "../../components/Copyright";
+import { reqLogin } from "../../api";
+import message from "../../util/message";
 
-export default function SignIn() {
+export default function LogIn(props) {
   const initState = { email: "", password: "" };
   const initError = { emailErr: false, emailMessage: "", passwordErr: false, passwordMessage: "" };
   const [state, setState] = useState(initState);
   const [error, setError] = useState(initError);
 
-  const validateEmail = (e) => {
+  const validateEmail = () => {
     const emailRegex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -38,15 +40,22 @@ export default function SignIn() {
     setState({ ...state, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(event);
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!(error.emailErr || error.passwordErr)) {
+      const response = await reqLogin(state);
+      console.log(response);
+      const result = response.data;
+      if (result.status === 0) {
+        message.success("Login success");
+        props.history.replace("/");
+      } else {
+        message.error(result.msg);
+      }
+      //props.openSnackbar("login success", "success");
+    } else {
+      message.error("illegal email or password input");
+    }
   };
 
   return (
