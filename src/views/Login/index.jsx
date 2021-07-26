@@ -13,6 +13,7 @@ import Container from "@material-ui/core/Container";
 import Copyright from "../../components/Copyright";
 import { reqLogin } from "../../api";
 import message from "../../util/message";
+import storageUtil from "../../util/storage";
 
 export default function LogIn(props) {
   const initState = { email: "", password: "" };
@@ -48,6 +49,8 @@ export default function LogIn(props) {
       const result = response.data;
       if (result.status === 0) {
         message.success("Login success");
+        storageUtil.saveUser(result.data);
+
         props.history.replace("/");
       } else {
         message.error(result.msg);

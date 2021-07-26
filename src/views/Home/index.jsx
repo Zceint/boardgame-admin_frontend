@@ -1,7 +1,13 @@
 import React from "react";
-import message from "../../util/message";
-//import GlobalSnackbars from "../../components/GlobalSnackbars";
+
+import LeftNav from "../../components/LeftNav";
+import Header from "../../components/Header";
 
 export default function Home() {
-  return <div>dasfasdfs fafdsa</div>;
+  return (
+    <>
+      <LeftNav />
+      <Header />
+    </>
+  );
 }
