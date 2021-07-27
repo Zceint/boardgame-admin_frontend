@@ -14,6 +14,7 @@ import Copyright from "../../components/Copyright";
 import { reqLogin } from "../../api";
 import message from "../../util/message";
 import storageUtil from "../../util/storage";
+import { Redirect } from "react-router-dom";
 
 export default function LogIn(props) {
   const initState = { email: "", password: "" };
@@ -61,7 +62,9 @@ export default function LogIn(props) {
     }
   };
 
-  return (
+  return storageUtil.getUser() ? (
+    <Redirect to="/" />
+  ) : (
     <Container
       component="main"
       maxWidth="xs"
