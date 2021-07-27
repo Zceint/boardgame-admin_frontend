@@ -14,10 +14,10 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import { makeStyles } from "@material-ui/styles";
 import { DRAWER_WIDTH } from "../../config/constant";
-import { theme } from "../../config/theme";
-import storageUtil from "../../util/storage";
 
-const user = storageUtil.getUser();
+// import storageUtil from "../../util/storage";
+
+// const user = storageUtil.getUser();
 const useStyles = makeStyles({
   drawerPaper: {
     width: DRAWER_WIDTH,
@@ -33,7 +33,7 @@ function LeftNav(props) {
       <Divider />
       <Avatar
         sx={{
-          backgroundColor: theme.palette.secondary.main,
+          backgroundColor: "secondary.main",
           m: 2,
           width: 80,
           height: 80,
@@ -43,7 +43,7 @@ function LeftNav(props) {
       >
         <PersonRoundedIcon sx={{ height: 60, width: 60 }} />
       </Avatar>
-      <Typography variant="h6">{user.email}</Typography>
+      <Typography variant="h6">{"admin"}</Typography>
 
       <List>
         <ListItem button key="Home" component={NavLink} to="/" selected={path === "/"}>

@@ -30,3 +30,8 @@ const ajax = (method = "GET", url, data = {}) => {
 export const reqLogin = ({ email, password }) => {
   return ajax("POST", backendURL + "/login", { email, password });
 };
+
+export const reqCategoryAdd = ({ name }) => {
+  console.log({ name });
+  return ajax("POST", backendURL + "/category/add", { name });
+};

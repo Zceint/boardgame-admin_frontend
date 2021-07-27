@@ -52,7 +52,7 @@ export default function LogIn(props) {
         message.success("Login success");
         storageUtil.saveUser(result.data);
 
-        props.history.replace("/");
+        props.history.replace("/home");
       } else {
         message.error(result.msg);
       }
@@ -63,7 +63,7 @@ export default function LogIn(props) {
   };
 
   return storageUtil.getUser() ? (
-    <Redirect to="/" />
+    <Redirect to="/home" />
   ) : (
     <Container
       component="main"
