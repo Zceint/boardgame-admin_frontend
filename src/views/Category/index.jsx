@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataGrid } from "@material-ui/data-grid";
 import {
   Typography,
@@ -11,70 +11,98 @@ import {
   TextField,
 } from "@material-ui/core";
 import Copyright from "../../components/Copyright";
-import { reqCategoryAdd } from "../../api";
-
-const columns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 100,
-  },
-  {
-    field: "categoryName",
-    headerName: "Category name",
-    width: 600,
-    editable: true,
-  },
-  {
-    field: "action",
-    headerName: "Action",
-    width: 270,
-    editable: true,
-    renderCell: (params) => (
-      <strong>
-        <Button variant="contained" color="primary" size="small" style={{ marginLeft: 16 }} onClick={() => {}}>
-          Open
-        </Button>
-        <Button variant="contained" color="primary" size="small" style={{ marginLeft: 16 }}>
-          Open
-        </Button>
-      </strong>
-    ),
-  },
-];
-
-const rows = [
-  { id: 1, categoryName: "Snow", action: "" },
-  { id: 2, categoryName: "Lannister", action: "" },
-  { id: 3, categoryName: "Lannister", action: "" },
-  { id: 4, categoryName: "Stark", action: "" },
-  { id: 5, categoryName: "Targaryen", action: "" },
-  { id: 6, categoryName: "Melisandre", action: "" },
-];
+import { reqCategoryAdd, reqCategoryList, reqCategoryDelete } from "../../api";
+import message from "../../util/message";
 
 export default function Category() {
   const [open, setOpen] = useState(false);
   const [addingCategory, setAddingCategory] = useState("");
+  const [categoryList, setCategoryList] = useState([]);
+  const [disable, setDisable] = useState(false);
+  const columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 100,
+    },
+    {
+      field: "categoryName",
+      headerName: "Category name",
+      width: 600,
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 270,
+
+      renderCell: (params) => (
+        <strong>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            style={{ marginLeft: 16 }}
+            onClick={() => {
+              const deletedCategoryName = params.row.categoryName;
+              reqCategoryDelete({ name: deletedCategoryName }).then((res) => {
+                if (res.data.status === 0) {
+                  setCategoryList(categoryList.filter((category) => category.name !== deletedCategoryName));
+                } else {
+                  message.error(res.data.msg);
+                }
+              });
+            }}
+          >
+            Delete
+          </Button>
+        </strong>
+      ),
+    },
+  ];
+  useEffect(() => {
+    let mounted = true;
+    reqCategoryList().then((res) => {
+      if (mounted) {
+        res.data.status === 0 ? setCategoryList(res.data.data) : message.error(res.data.msg);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleAdd = () => {
-    reqCategoryAdd({ name: addingCategory });
+    setOpen(false);
+    setDisable(true);
+    reqCategoryAdd({ name: addingCategory }).then((res) => {
+      if (res.data.status === 0) {
+        setCategoryList([...categoryList, { name: addingCategory }]);
+        setDisable(false);
+      } else {
+        message.error(res.data.msg);
+        setDisable(false);
+      }
+    });
   };
   const handleClickOpen = () => {
+    setAddingCategory("");
     setOpen(true);
+    setDisable(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
-  const handleAddingCategory = (e) => {
-    setAddingCategory(e.target.value);
-  };
+
+  const rows = categoryList.map((category, index) => {
+    return { id: index, categoryName: category.name };
+  });
 
   return (
     <Box sx={{ height: 420, width: "100%", padding: 2 }}>
       <Box display="flex" justifyContent="space-between" mb={3} mt={1}>
         <Typography variant="h5"> Categories</Typography>
-        <Button variant="filled" onClick={handleClickOpen}>
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>
           Add
         </Button>
       </Box>
@@ -87,12 +115,17 @@ export default function Category() {
             label="Name"
             fullWidth
             variant="standard"
-            onChange={handleAddingCategory}
+            onChange={(e) => {
+              setDisable(false);
+              setAddingCategory(e.target.value);
+            }}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleAdd} disabled={disable}>
+            Add
+          </Button>
         </DialogActions>
       </Dialog>
       <DataGrid rows={rows} columns={columns} disableSelectionOnClick pageSize={5} />

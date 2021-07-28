@@ -46,7 +46,6 @@ export default function LogIn(props) {
     e.preventDefault();
     if (!(error.emailErr || error.passwordErr)) {
       const response = await reqLogin(state);
-      console.log(response);
       const result = response.data;
       if (result.status === 0) {
         message.success("Login success");

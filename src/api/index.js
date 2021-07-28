@@ -32,6 +32,13 @@ export const reqLogin = ({ email, password }) => {
 };
 
 export const reqCategoryAdd = ({ name }) => {
-  console.log({ name });
   return ajax("POST", backendURL + "/category/add", { name });
+};
+
+export const reqCategoryList = () => {
+  return ajax("GET", backendURL + "/category/list", {});
+};
+
+export const reqCategoryDelete = ({ name }) => {
+  return ajax("POST", backendURL + "/category/delete", { name });
 };
