@@ -42,3 +42,15 @@ export const reqCategoryList = () => {
 export const reqCategoryDelete = ({ name }) => {
   return ajax("POST", backendURL + "/category/delete", { name });
 };
+
+export const reqProduct = axios.get(
+  "https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&pretty=true&client_id=Q7FGFvjQSI&limit=100"
+);
+
+export const searchProduct = ({ name }) => {
+  return ajax(
+    "GET",
+    "https://api.boardgameatlas.com/api/search?order_by=rank&ascending=false&pretty=true&client_id=Q7FGFvjQSI&exact&limit=4",
+    { name }
+  );
+};
